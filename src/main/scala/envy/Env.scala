@@ -5,17 +5,22 @@ import shapeless.labelled._
 import cats.implicits._
 
 trait Env[A] {
-  def load(name : String) : Either[Throwable, A]
+  def load(prefix : String, source : Map[String, String]) : Either[Throwable, A]
 }
 
-object Env {
-  def load[A : Env: Manifest]: Either[Throwable, A] =
-    implicitly[Env[A]].load(configPrefix[A])
-
-  // Don't use directly
+class LowPriorityInstances {
   trait EnvField[A, D] {
-    def load(name : String, default : D) : Either[Throwable, A]
+    def load(prefix : String, source : Map[String, String], default : D) : Either[Throwable, A]
   }
+  implicit def envFieldFromEnv[A](implicit e : Env[A]) : EnvField[A, Some[A]]   =
+    (name, src, default) => Right(e.load(name, src).getOrElse(default.value))
+  implicit def envFieldFromEnvN[A](implicit e : Env[A]): EnvField[A, None.type] =
+    (name, src, _) => e.load(name, src)
+}
+
+object Env extends LowPriorityInstances {
+  def load[A : Env: Manifest](source : Map[String, String] = sys.env): Either[Throwable, A] =
+    implicitly[Env[A]].load(configPrefix[A], source)
 
   def format(name: String): String =
     "[A-Z\\d]".r
@@ -25,13 +30,10 @@ object Env {
   def configPrefix[A](implicit man: Manifest[A]): String =
     format(man.runtimeClass.getSimpleName.replaceAll("(?i)config", ""))
 
-  implicit def hNilEnvF[D] : EnvField[HNil, D] = (_, _) => Right(HNil)
+  implicit def hNilEnvF[D] : EnvField[HNil, D] = (_, _, _) => Right(HNil)
 
-  implicit def envFieldFromEnv[A](implicit e : Env[A]) : EnvField[A, Some[A]]   = (name, default) => Right(e.load(name).getOrElse(default.value))
-  implicit def envFieldFromEnvN[A](implicit e : Env[A]): EnvField[A, None.type] = (name, _) => e.load(name)
-
-  implicit def envDFromReadS[A : Read]: EnvField[A, Some[A]]   = (name, d) => Right(Read.readFromEnv(name).getOrElse(d.value))
-  implicit def envDFromReadN[A : Read]: EnvField[A, None.type] = (name, _) => Read.readFromEnv(name)
+  implicit def envDFromReadS[A : Read]: EnvField[A, Some[A]]   = (name, src, d) => Right(Read.readFromSource(name, src).getOrElse(d.value))
+  implicit def envDFromReadN[A : Read]: EnvField[A, None.type] = (name, src, _) => Read.readFromSource(name, src)
 
   implicit def hListBaseEnv[K <: Symbol, H, T <: HList, DH, DT <: HList]
   ( implicit
@@ -39,9 +41,9 @@ object Env {
   , hEnv    : Lazy[EnvField[H, DH]]
   , tEnv    : EnvField[T, DT]
   ) : EnvField[FieldType[K, H] :: T, DH :: DT] =
-  (prefix, default) =>
-    ( hEnv.value.load(s"${prefix}_${format(witness.value.name)}", default.head)
-    , tEnv.load(prefix, default.tail)
+  (prefix, src, default) =>
+    ( hEnv.value.load(s"${prefix}_${format(witness.value.name)}", src, default.head)
+    , tEnv.load(prefix, src, default.tail)
     ).mapN(field[K](_) :: _)
 
   implicit def genericEnv[A, R, D <: HList]
@@ -50,40 +52,6 @@ object Env {
   , defs : Default.Aux[A, D]
   , rEnv : Lazy[EnvField[R, D]]
   ) : Env[A] =
-    rEnv.value.load(_, defs()).map(gen.from)
-}
-
-trait Read[A] {
-  def read(s: String) : Either[String, A]
-}
-
-object Read {
-  def apply[A : Read] : Read[A] = implicitly
-
-  implicit val readString : Read[String]  = Right(_)
-  implicit val readInt    : Read[Int]     = x => x.toIntOption.toRight(x)
-  implicit val readBool   : Read[Boolean] = x => x.toBooleanOption.toRight(x)
-
-  implicit def readList[A : Read] : Read[List[A]] =
-    _.split(",").toList.traverse(Read[A].read)
-
-  implicit def readOption[A : Read] : Read[Option[A]] = {
-    case "" => Right(None)
-    case s  => Read[A].read(s).map(Some(_))
-  }
-
-  def readFromEnv[A: Read](name : String) : Either[Throwable, A] =
-    sys.env.get(name)
-      .toRight(new RuntimeException(s"Environment variable '$name' not found"))
-      .flatMap(Read[A].read(_).left.map(x => new RuntimeException(s"Couldn't convert $x")))
-}
-
-case class UltraNested(nestedList : List[Option[Int]])
-
-case class Nested(a: Int, ultraNested: UltraNested, b : String = "asdasd")
-
-case class ServerConfig(nested : Nested, hosts : List[String] , port : Int = 5050, secure : Boolean)
-
-object Hello extends App {
-  println(Env.load[ServerConfig])
+  (prefix, src) =>
+    rEnv.value.load(prefix, src, defs()).map(gen.from)
 }
