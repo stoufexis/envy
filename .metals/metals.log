@@ -1,0 +1,46 @@
+2022.11.27 15:12:52 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/stoufexis/repos/envr/.metals/lsp.trace.json or /home/stoufexis/.cache/metals/lsp.trace.json[0m
+2022.11.27 15:12:53 INFO  logging to file /home/stoufexis/repos/envr/.metals/metals.log[0m
+2022.11.27 15:12:53 INFO  Started: Metals version 0.11.9 in workspace '/home/stoufexis/repos/envr' for client Neovim 0.9.0.[0m
+2022.11.27 15:12:53 ERROR Running process '/home/stoufexis/.jdks/corretto-11.0.16.1/bin/java -version' failedjava.io.IOException: Cannot run program "/home/stoufexis/.jdks/corretto-11.0.16.1/bin/java" (in directory "/home/stoufexis/.jdks/corretto-11.0.16.1"): error=2, No such file or directory
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:1128)
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:1071)
+	at scala.meta.internal.process.SystemProcess$.run(SystemProcess.scala:45)
+	at scala.meta.internal.builds.ShellRunner$.runSync(ShellRunner.scala:154)
+	at scala.meta.internal.metals.JdkVersion$.fromShell(JavaInteractiveSemanticdb.scala:245)
+	at scala.meta.internal.metals.JdkVersion$.$anonfun$maybeJdkVersionFromJavaHome$2(JavaInteractiveSemanticdb.scala:236)
+	at scala.Option.orElse(Option.scala:477)
+	at scala.meta.internal.metals.JdkVersion$.$anonfun$maybeJdkVersionFromJavaHome$1(JavaInteractiveSemanticdb.scala:236)
+	at scala.Option.flatMap(Option.scala:283)
+	at scala.meta.internal.metals.JdkVersion$.maybeJdkVersionFromJavaHome(JavaInteractiveSemanticdb.scala:234)
+	at scala.meta.internal.metals.MetalsLanguageServer.updateWorkspaceDirectory(MetalsLanguageServer.scala:405)
+	at scala.meta.internal.metals.MetalsLanguageServer.$anonfun$initialize$2(MetalsLanguageServer.scala:861)
+	at scala.concurrent.Future$.$anonfun$apply$1(Future.scala:678)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.lang.Thread.run(Thread.java:829)
+Caused by: java.io.IOException: error=2, No such file or directory
+	at java.lang.ProcessImpl.forkAndExec(Native Method)
+	at java.lang.ProcessImpl.<init>(ProcessImpl.java:340)
+	at java.lang.ProcessImpl.start(ProcessImpl.java:271)
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:1107)
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:1071)
+	at scala.meta.internal.process.SystemProcess$.run(SystemProcess.scala:45)
+	at scala.meta.internal.builds.ShellRunner$.runSync(ShellRunner.scala:154)
+	at scala.meta.internal.metals.JdkVersion$.fromShell(JavaInteractiveSemanticdb.scala:245)
+	at scala.meta.internal.metals.JdkVersion$.$anonfun$maybeJdkVersionFromJavaHome$2(JavaInteractiveSemanticdb.scala:236)
+	at scala.Option.orElse(Option.scala:477)
+	at scala.meta.internal.metals.JdkVersion$.$anonfun$maybeJdkVersionFromJavaHome$1(JavaInteractiveSemanticdb.scala:236)
+	at scala.Option.flatMap(Option.scala:283)
+	at scala.meta.internal.metals.JdkVersion$.maybeJdkVersionFromJavaHome(JavaInteractiveSemanticdb.scala:234)
+	at scala.meta.internal.metals.MetalsLanguageServer.updateWorkspaceDirectory(MetalsLanguageServer.scala:405)
+	at scala.meta.internal.metals.MetalsLanguageServer.$anonfun$initialize$2(MetalsLanguageServer.scala:861)
+	at scala.concurrent.Future$.$anonfun$apply$1(Future.scala:678)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.lang.Thread.run(Thread.java:829)
+[0m
+2022.11.27 15:12:54 INFO  time: initialize in 1.02s[0m
+2022.11.27 15:12:56 WARN  Build server is not auto-connectable.[0m
+2022.11.27 15:12:56 WARN  no build target for: /home/stoufexis/repos/envr/build.sbt[0m
