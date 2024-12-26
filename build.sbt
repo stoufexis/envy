@@ -2,12 +2,12 @@ import Dependencies._
 
 ThisBuild / scalaVersion     := "2.13.10"
 ThisBuild / version          := "0.0.1"
-ThisBuild / organization     := "StefanosTouf"
+ThisBuild / organization     := "stoufexis"
 
 val shapeless = "2.3.10"
 val cats      = "2.9.0"
 
-githubOwner       := "StefanosTouf"
+githubOwner       := "stoufexis"
 githubRepository  := "envy"
 githubTokenSource := TokenSource.GitConfig("github.token") || TokenSource.Environment("GITHUB_TOKEN")
 
